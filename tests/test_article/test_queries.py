@@ -1,5 +1,5 @@
 from blog.models import Article
-from blog.queries import ListArticlesQuery
+from blog.queries import ListArticlesQuery, GetArticleByIDQuery
 
 
 def test_list_articles():
