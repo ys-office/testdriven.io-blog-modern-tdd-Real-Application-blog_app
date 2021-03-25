@@ -1,9 +1,17 @@
 from flask import Flask, jsonify, request
+from pydantic import ValidationError
 
 from blog.commands import CreateArticleCommand
 from blog.queries import GetArticleByIDQuery, ListArticlesQuery
 
 app = Flask(__name__)
+
+
+@app.errorhandler(ValidationError)
+def handle_validation_exception(error):
+    response = jsonify(error.errors())
+    response.status_code = 400
+    return response
 
 
 @app.route('/create-article/', methods=['POST'])
