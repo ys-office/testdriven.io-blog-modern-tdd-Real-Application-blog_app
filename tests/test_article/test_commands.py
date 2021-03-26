@@ -4,21 +4,29 @@ from blog.models import Article
 from blog.commands import CreateArticleCommand, AlreadyExists
 
 
-def test_create_article():
+def test_create_article(monkeypatch):
     """
-    GIVEN CreateArticleCommand with a valid properties author, title and content
+    GIVEN CreateArticleCommand with valid properties author, title and content
     WHEN the execute method is called
-    THEN a new Article must exist in the database with the same attributes
+    THEN a new Article must exist in the database with same attributes
     """
+    article = Article(
+        author='john@doe.com',
+        title='New Article',
+        content='Super awesome article'
+    )
+    monkeypatch.setattr(
+        Article,
+        'save',
+        lambda self: article
+    )
     cmd = CreateArticleCommand(
         author='john@doe.com',
         title='New Article',
         content='Super awesome article'
     )
 
-    article = cmd.execute()
-
-    db_article = Article.get_by_id(article.id)
+    db_article = cmd.execute()
 
     assert db_article.id == article.id
     assert db_article.author == article.author
