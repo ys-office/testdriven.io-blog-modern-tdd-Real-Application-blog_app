@@ -1,5 +1,6 @@
 import json
 import pathlib
+import requests
 
 import pytest
 from jsonschema import validate, RefResolver
@@ -129,3 +130,26 @@ def test_create_article_bad_request(client, data):
 
     assert response.status_code == 400
     assert response.json is not None
+
+
+@pytest.mark.e2e
+def test_create_list_get(client):
+    requests.post(
+        'http://localhost:5000/create-article/',
+        json={
+            'author': 'john@doe.com',
+            'title': 'New Article',
+            'content': 'Some extra awesome content'
+        }
+    )
+    response = requests.get(
+        'http://localhost:5000/article-list/',
+    )
+
+    articles = response.json()
+
+    response = requests.get(
+        f'http://localhost:5000/article/{articles[0]["id"]}/',
+    )
+
+    assert response.status_code == 200
